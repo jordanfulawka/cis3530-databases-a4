@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}Employees{% endblock %} {% block
+content %}
+<h1>All Employees</h1>
+
+<table border="1">
+  <tr>
+    <th>Full Name</th>
+    <th>Ssn</th>
+    <th>Department</th>
+    <th>Address</th>
+    <th>Salary</th>
+  </tr>
+  {% for emp in employees %}
+  <tr>
+    <td>{{ emp[0] }} {{ emp[1] }} {{ emp[2] }}</td>
+    <td>{{ emp[3] }}</td>
+    <td>{{ emp[4] }}</td>
+    <td>{{ emp[5] }}</td>
+    <td>{{ emp[6] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
