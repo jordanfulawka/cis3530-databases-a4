@@ -8,12 +8,12 @@
 <body style="margin: 0;">
     <nav style="background-color: #aAAA; padding: 20px 0;">
         <h2>Company Database</h2>
-    
+
+        <a href="{{ url_for('employees') }}" style="text-decoration:none; padding:8px 14px; background:white; border-radius:6px; border:1px solid black;">
+            Employees
+         </a>
         <a href="{{ url_for('projects') }}"style="text-decoration:none; padding:8px 14px; background:white; border-radius:6px; border:1px solid black;">
-          Projects
-        </a>
-        <a href="{{ url_for('managers') }}"style="text-decoration:none; padding:8px 14px; background:white; border-radius:6px; border:1px solid black;">
-          Managers
+            Projects
         </a>
     </nav>
 
@@ -21,20 +21,20 @@
 
     <table border="1" width="100%">
         <tr>
-            <th>Full Name</th>
             <th>Department Name</th>
-            <th>Number of Dependents</th>
-            <th>Number of Projects</th>
-            <th>Total Hours</th>
+            <th>Department Number</th>
+            <th>Manager Full Name</th>
+            <th>Department Employee Count</th>
+            <th>Department Total Hours</th>
         </tr>
 
-        {% for e in employees %}
+        {% for m in managers %}
         <tr>
-            <td>{{ e[0] }}</td>
-            <td>{{ e[1] }}</td>
-            <td>{{ e[2] }}</td>
-            <td>{{ e[3] }}</td>
-            <td>{{ e[4] }}</td>
+            <td>{{ m[0] }}</td>
+            <td>{{ m[1] }}</td>
+            <td>{{ m[2] }}</td>
+            <td>{{ m[3] }}</td>
+            <td>{{ m[4] }}</td>
         </tr>
         {% endfor %}
     </table>

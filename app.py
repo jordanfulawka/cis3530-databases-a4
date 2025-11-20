@@ -8,9 +8,9 @@ app = Flask(__name__)
 app.secret_key = "randomkey" # change later
 app.teardown_appcontext(close_db)
 
-# @app.route("/")
-# def index():
-#     return redirect(url_for("login"))
+@app.route("/")
+def index():
+    return redirect(url_for("login"))
 
 @app.before_request
 def load_user():
@@ -49,41 +49,75 @@ def role_required(role):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"].strip()
-        password = request.form["password"].strip()
-
-        conn = get_db()
-        with conn.cursor() as cur:
-            cur.execute("SELECT id, password_hash FROM app_user WHERE username = %s", (username,))
-            row = cur.fetchone()
-
-        if row is None:
-            flash("Invalid username of password")
-            return render_template("login.html")
-        
-        user_id, password_hash = row
-        
-        if not check_password_hash(password_hash, password):
-            flash("Invalid username or password")
-            print('invalid!')
-            return render_template("login.html")
-
-        session.clear()
-        session["user_id"] = user_id
         return redirect(url_for("employees"))
+        #username = request.form["username"].strip()
+        #password = request.form["password"].strip()
+
+        #conn = get_db()
+     #   with conn.cursor() as cur:
+         #   cur.execute("SELECT id, password_hash FROM app_user WHERE username = %s", (username,))
+         #   row = cur.fetchone()
+           # print(row)
+#
+       # if row is None:
+          #  flash('Invalid username of password')
+          #  return render_template("login.html")
+        
+       # user_id, password_hash = row
+        
+       # if not check_password_hash(password_hash, password):
+          #  flash('Invalid username or password')
+           # print('invalid!')
+          #  return render_template("login.html")
+
+        #session.clear()
+        #session["user_id"] = user_id
+
+        
 
     return render_template("login.html")
 
 @app.route("/employees")
-@login_required
+#@login_required
 def employees():
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT Fname, Minit, Lname, SSN, Dno, Address, Salary FROM Employee 
-            """)
+            cur.execute("""SELECT E.Fname || ' ' || E.Minit || '. ' || E.Lname AS full_name,D.Dname AS department_name,COUNT(DP.Dependent_name) AS num_dependents,COUNT(DISTINCT W.Pno) AS num_projects,COALESCE(SUM(W.Hours), 0) AS total_hours
+                            FROM Employee E
+                            JOIN Department D ON E.Dno = D.Dnumber
+                            LEFT JOIN Dependent DP ON E.Ssn = DP.Essn
+                            LEFT JOIN Works_On W ON E.Ssn = W.Essn
+                            GROUP BY E.Ssn, D.Dname""")
             employees_list = cur.fetchall()
     return render_template("employees.html", employees=employees_list)
+
+@app.route("/projects")
+def projects():
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""SELECT P.Pname,D.Dname AS owning_department,COUNT(DISTINCT W.Essn) AS headcount,COALESCE(SUM(W.Hours), 0) AS total_assigned_hours
+                            FROM Project P
+                            JOIN Department D ON P.Dnum = D.Dnumber
+                            LEFT JOIN Works_On W ON P.Pnumber = W.Pno
+                            GROUP BY P.Pnumber, D.Dname""")
+            projects_list = cur.fetchall()
+    return render_template("projects.html", projects=projects_list)
+
+@app.route("/managers")
+def managers():
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""SELECT D.Dname,D.Dnumber,(M.Fname || ' ' || M.Minit || '. ' || M.Lname) AS manager_full_name,COUNT(DISTINCT E.Ssn) AS employee_count, COALESCE(SUM(W.Hours), 0) AS department_total_hours
+                            FROM Department D
+                            LEFT JOIN Employee M ON D.Mgr_ssn = M.Ssn
+                            LEFT JOIN Employee E ON E.Dno = D.Dnumber
+                            LEFT JOIN Works_On W ON E.Ssn = W.Essn
+                            GROUP BY D.Dname, D.Dnumber, manager_full_name""")
+
+            managers_list = cur.fetchall()
+    return render_template("managers.html", managers=managers_list)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
