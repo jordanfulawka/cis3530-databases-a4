@@ -27,24 +27,24 @@ def load_user():
 
 def login_required(view):
     @wraps(view)
-    def wrapped(**kwargs):
-        if g.get("user") is None:
-            return redirect(url_for("login"))
+    def wrapped_view(**kwargs):
+        if 'user_id' not in session:
+            flash('You must be logged in to access this page.')
+            return redirect(url_for('login'))
         return view(**kwargs)
-    return wrapped
+    return wrapped_view
 
-def role_required(role):
-    def decorator(view):
-        @wraps(view)
-        def wrapped_view(*args, **kwargs):
-            if g.user is None:
-                return redirect(url_for("login"))
-            if g.user.get("role") != role:
-                flash("No permission")
-                return redirect(url_for("login"))
-            return view(*args, **kwargs)
-        return wrapped_view
-    return decorator
+def admin_required(view):
+    @wraps(view)
+    def wrapped_view(**kwargs):
+        if 'user_id' not in session:
+            flash('Login required')
+            return redirect(url_for('login'))
+        if session.get('role') != 'admin':
+            flash('Invalid permission')
+            return redirect(url_for('employees'))
+        return view(**kwargs)
+    return wrapped_view
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -54,14 +54,14 @@ def login():
 
         conn = get_db()
         with conn.cursor() as cur:
-            cur.execute("SELECT id, password_hash FROM app_user WHERE username = %s", (username,))
+            cur.execute("SELECT id, password_hash, role FROM app_user WHERE username = %s", (username,))
             row = cur.fetchone()
 
         if row is None:
-            flash("Invalid username of password")
+            flash("Invalid username or password")
             return render_template("login.html")
         
-        user_id, password_hash = row
+        user_id, password_hash, role = row
         
         if not check_password_hash(password_hash, password):
             flash("Invalid username or password")
@@ -70,6 +70,8 @@ def login():
 
         session.clear()
         session["user_id"] = user_id
+        session["role"] = role
+        
         return redirect(url_for("employees"))
 
     return render_template("login.html")
@@ -188,6 +190,7 @@ def project_details(project_id):
 
 
 @app.route("/employees/add", methods=["GET"])
+@admin_required
 def add_employee():
     return render_template("employee_add.html")
 
@@ -218,6 +221,7 @@ def add_employee_submit():
         return "Error: SSN must be unique.", 400
     
 @app.route("/employees/<ssn>/edit", methods=["GET"])
+@admin_required
 def edit_employee_form(ssn):
     conn = get_db()
     cur = conn.cursor(row_factory=psycopg.rows.dict_row)
@@ -260,6 +264,7 @@ def edit_employee_submit(ssn):
     return redirect("/employees")
 
 @app.route("/employees/<ssn>/delete", methods=["POST"])
+@admin_required
 def delete_employee(ssn):
     conn = get_db()
     try:
@@ -275,6 +280,19 @@ def delete_employee(ssn):
             " Dependent, or manage/supervise another worker.",
             400
         )
+    
+@app.route("/managers")
+def managers():
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""SELECT D.Dname,D.Dnumber,(M.Fname || ' ' || M.Minit || '. ' || M.Lname) AS manager_full_name,COUNT(DISTINCT E.Ssn) AS employee_count, COALESCE(SUM(W.Hours), 0) AS department_total_hours
+                            FROM Department D
+                            LEFT JOIN Employee M ON D.Mgr_ssn = M.Ssn
+                            LEFT JOIN Employee E ON E.Dno = D.Dnumber
+                            LEFT JOIN Works_On W ON E.Ssn = W.Essn
+                            GROUP BY D.Dname, D.Dnumber, manager_full_name""")
+            managers_list = cur.fetchall()
+    return render_template("managers.html", managers=managers_list)
 
 @app.route("/logout")
 def logout():

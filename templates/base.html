@@ -3,40 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <title>{% block title %}{% endblock %}</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-
-      header {
-        background-color: #333;
-        padding: 10px;
-      }
-
-      nav a {
-        color: white;
-        margin-right: 15px;
-        text-decoration: none;
-        font-weight: bold;
-      }
-
-      nav a:hover {
-        text-decoration: underline;
-      }
-
-      main {
-        padding: 20px;
-      }
-
-      .flashes {
-        list-style-type: none;
-        padding: 0;
-        margin-bottom: 20px;
-        color: red;
-      }
-    </style>
   </head>
   <body>
     <header>
@@ -44,6 +10,7 @@
         {% if g.user %}
         <a href="{{ url_for('employees') }}">Employees</a>
         <a href="{{ url_for('projects') }}">Projects</a>
+        <a href="{{ url_for('managers') }}">Managers</a>
         <a href="{{ url_for('add_employee') }}">Add Employee</a>
         <a href="{{ url_for('logout') }}">Logout</a>
         {% else %}

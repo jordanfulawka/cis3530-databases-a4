@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block title %}Projects{% endblock %} {% block
+content %}
+
+<h1>Employee Information</h1>
+
+<table border="1" width="100%">
+  <tr>
+    <th>Department Name</th>
+    <th>Department Number</th>
+    <th>Manager Full Name</th>
+    <th>Department Employee Count</th>
+    <th>Department Total Hours</th>
+  </tr>
+
+  {% for m in managers %}
+  <tr>
+    <td>{{ m[0] }}</td>
+    <td>{{ m[1] }}</td>
+    <td>{{ m[2] }}</td>
+    <td>{{ m[3] }}</td>
+    <td>{{ m[4] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
