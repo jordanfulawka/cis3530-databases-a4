@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>Project: {{ project[0] }} ({{ project[1] }})</h1>
+
+<h2>Assigned Employees</h2>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Hours</th>
+  </tr>
+  {% for e in assigned %}
+  <tr>
+    <td>{{ e[1] }} {{ e[2] }} {{ e[3] }}</td>
+    <td>{{ e[4] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Add Hours / Assign Employee</h2>
+<form method="POST">
+  <label>Employee:</label>
+  <select name="employee">
+    {% for e in all_employees %}
+    <option value="{{ e[0] }}">{{ e[1] }} {{ e[2] }} {{ e[3] }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Hours:</label>
+  <input type="number" name="hours" step="0.1" required />
+
+  <button type="submit">Submit</button>
+</form>
+
+{% endblock %}

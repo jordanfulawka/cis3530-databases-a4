@@ -1,41 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employees Page</title>
-</head>
-<body style="margin: 0;">
-    <nav style="background-color: #aAAA; padding: 20px 0;">
-        <h2>Company Database</h2>
+{% extends "base.html" %} {% block title %}Projects{% endblock %} {% block
+content %}
+<h1>Projects</h1>
 
-        <a href="{{ url_for('employees') }}"style="text-decoration:none; padding:8px 14px; background:white; border-radius:6px; border:1px solid black;">
-            Employees
+<table border="1">
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Owning Department</th>
+      <th>Headcount</th>
+      <th>Total Assigned Hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for project in projects %}
+    <tr>
+      <td>
+        <a
+          href="{{ url_for('project_details', project_id=project['project_number']) }}"
+        >
+          {{ project['project_name'] }}
         </a>
-        <a href="{{ url_for('managers') }}"style="text-decoration:none; padding:8px 14px; background:white; border-radius:6px; border:1px solid black;">
-        Managers
-        </a>
-    </nav>
-
-    <h1>Employee Information</h1>
-
-    <table border="1" width="100%">
-        <tr>
-            <th>Project Name</th>
-            <th>Owning Department</th>
-            <th>Total Employees</th>
-            <th>Total Hours</th>
-        </tr>
-
-        {% for p in projects %}
-        <tr>
-            <td>{{ p[0] }}</td>
-            <td>{{ p[1] }}</td>
-            <td>{{ p[2] }}</td>
-            <td>{{ p[3] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-</body>
-</html>
+      </td>
+      <td>{{ project['department_name'] }}</td>
+      <td>{{ project['headcount'] }}</td>
+      <td>{{ project['total_hours'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

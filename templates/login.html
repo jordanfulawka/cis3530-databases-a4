@@ -9,12 +9,27 @@
     <nav style="background-color: #aAAA; padding: 20px 0; ">
         <h2>Company Database</h2>
     </nav>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="list-style: none; padding: 10px; margin: 10px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px;">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <!-- END FLASH MESSAGES -->
+
     <h1>Enter your login info</h1>
-    <form action ="/login" method="post">
+    <form action="/login" method="post">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="username" id="username" name="username" required><br><br>
+
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br><br>
+
         <input type="submit" value="Login">
     </form>
 </body>
