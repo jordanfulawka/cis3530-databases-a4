@@ -195,6 +195,7 @@ def add_employee():
     return render_template("employee_add.html")
 
 @app.route("/employees/add", methods=["POST"])
+@admin_required
 def add_employee_submit():
     conn = get_db()
     ssn = request.form["ssn"]
@@ -242,6 +243,7 @@ def edit_employee_form(ssn):
     return render_template("employee_edit.html", emp=emp)
 
 @app.route("/employees/<ssn>/edit", methods=["POST"])
+@admin_required
 def edit_employee_submit(ssn):
     conn = get_db()
     first_name = request.form["first_name"]
