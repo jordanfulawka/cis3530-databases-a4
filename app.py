@@ -81,7 +81,20 @@ def login():
 def employees():
     conn = get_db()
     with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-        cur.execute("""
+
+        department_filter = request.args.get('department')
+        name_filter = request.args.get('name')
+        sort_by = request.args.get("sort_by", "name")
+        sort_dir = request.args.get("sort_dir", "asc").lower()
+
+        sort_columns = {"name": "E.Fname || ' ' || E.Minit || ' ' || E.Lname",
+                    "total_hours": "total_hours"}
+        sort_directions = {"asc", "desc"}
+        
+        sort_column_sql = sort_columns.get(sort_by, "E.Fname || E.Minit || E.Lname")
+        sort_direction_sql = sort_dir if sort_dir in sort_directions else "asc"
+
+        query = """
             SELECT  E.Ssn,
                     E.Fname, 
                     E.Minit, 
@@ -97,12 +110,48 @@ def employees():
                 ON E.Ssn = DP.Essn
             LEFT JOIN Works_On W
                 ON E.Ssn = W.Essn
-            GROUP BY
-                E.Ssn, E.Fname, E.Minit, E.Lname, D.Dname
-            ORDER BY E.Fname, E.Lname;
-        """)
+            WHERE 1=1
+        """
+
+        params = []
+
+        if department_filter:
+            query += ' AND D.Dname = %s'
+            params.append(department_filter)
+        
+        if name_filter:
+            query += " AND LOWER(E.Fname || ' ' || E.Minit || ' ' || E.Lname) LIKE %s"
+            params.append(f"%{name_filter.lower()}%")
+
+        query += f" GROUP BY E.Ssn, E.Fname, E.Minit, E.Lname, D.Dname ORDER BY {sort_column_sql} {sort_direction_sql}"
+
+        cur.execute(query, params)
         employees_list = cur.fetchall()
-    return render_template("employees.html", employees=employees_list)
+
+        cur.execute("SELECT Dname FROM Department ORDER BY Dname;")
+        departments = [row["dname"] for row in cur.fetchall()]
+
+        # cur.execute("""
+        #     SELECT  E.Ssn,
+        #             E.Fname, 
+        #             E.Minit, 
+        #             E.Lname,
+        #             D.Dname as department_name,
+        #             COALESCE(COUNT(DP.Dependent_name), 0) as num_dependents,
+        #             COALESCE(COUNT(DISTINCT W.Pno), 0) as num_projects,
+        #             COALESCE(SUM(W.Hours), 0) as total_hours
+        #     FROM Employee E
+        #     LEFT JOIN Department D
+        #         ON E.Dno = D.Dnumber
+        #     LEFT JOIN Dependent DP
+        #         ON E.Ssn = DP.Essn
+        #     LEFT JOIN Works_On W
+        #         ON E.Ssn = W.Essn
+        #     GROUP BY
+        #         E.Ssn, E.Fname, E.Minit, E.Lname, D.Dname
+        #     ORDER BY E.Fname, E.Lname;
+        # """)
+    return render_template("employees.html", employees=employees_list, departments=departments, selected_department=department_filter or "", name_filter=name_filter or "", sort_by=sort_by, sort_dir=sort_dir)
 
 @app.route("/projects")
 @login_required

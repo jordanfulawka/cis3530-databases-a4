@@ -2,6 +2,33 @@
 content %}
 <h1>Employee Overview</h1>
 
+<form method="GET" action="{{ url_for('employees') }}">
+  <label for="department">Department:</label>
+  <select name="department" id="department">
+    <option value="">All</option>
+    {% for dept in departments %}
+      <option value="{{ dept }}" {% if dept == selected_department %}selected{% endif %}>{{ dept }}</option>
+    {% endfor %}
+  </select>
+
+  <label for="name">Employee Name:</label>
+  <input type="text" name="name" id="name" value="{{ name_filter }}">
+
+  <label for="sort_by">Sort by:</label>
+  <select name="sort_by" id="sort_by">
+    <option value="name" {% if request.args.get('sort_by') == 'name' %}selected{% endif %}>Name</option>
+    <option value="total_hours" {% if request.args.get('sort_by') == 'total_hours' %}selected{% endif %}>Total Hours</option>
+  </select>
+
+  <select name="sort_dir" id="sort_dir">
+    <option value="asc" {% if request.args.get('sort_dir') == 'asc' %}selected{% endif %}>Ascending</option>
+    <option value="desc" {% if request.args.get('sort_dir') == 'desc' %}selected{% endif %}>Descending</option>
+  </select>
+
+  <button type="submit">Filter</button>
+  <button type="submit" style="display: inline;">Clear Filters</button>
+</form>
+
 <table border="1">
   <thead>
     <tr>
