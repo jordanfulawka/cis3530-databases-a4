@@ -100,6 +100,29 @@ def employees():
             ORDER BY E.Fname, E.Lname;
         """)
         employees_list = cur.fetchall()
+    conn = get_db()
+    with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+        cur.execute("""
+            SELECT  E.Ssn,
+                    E.Fname, 
+                    E.Minit, 
+                    E.Lname,
+                    D.Dname as department_name,
+                    COALESCE(COUNT(DP.Dependent_name), 0) as num_dependents,
+                    COALESCE(COUNT(DISTINCT W.Pno), 0) as num_projects,
+                    COALESCE(SUM(W.Hours), 0) as total_hours
+            FROM Employee E
+            LEFT JOIN Department D
+                ON E.Dno = D.Dnumber
+            LEFT JOIN Dependent DP
+                ON E.Ssn = DP.Essn
+            LEFT JOIN Works_On W
+                ON E.Ssn = W.Essn
+            GROUP BY
+                E.Ssn, E.Fname, E.Minit, E.Lname, D.Dname
+            ORDER BY E.Fname, E.Lname;
+        """)
+        employees_list = cur.fetchall()
     return render_template("employees.html", employees=employees_list)
 
 @app.route("/projects")
