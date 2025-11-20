@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block title %}Projects{% endblock %} {% block
+content %}
+<h1>Projects</h1>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Owning Department</th>
+      <th>Headcount</th>
+      <th>Total Assigned Hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for project in projects %}
+    <tr>
+      <td>
+        <a
+          href="{{ url_for('project_details', project_id=project['project_number']) }}"
+        >
+          {{ project['project_name'] }}
+        </a>
+      </td>
+      <td>{{ project['department_name'] }}</td>
+      <td>{{ project['headcount'] }}</td>
+      <td>{{ project['total_hours'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

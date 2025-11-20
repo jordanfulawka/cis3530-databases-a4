@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Edit Employee{% endblock %}
+
+{% block content %}
+<h1>Edit Employee</h1>
+
+<form method="POST" action="{{ url_for('edit_employee_submit', ssn=emp['ssn']) }}">
+  <table>
+    <tr>
+      <td>SSN:</td>
+      <td><input type="text" name="ssn" value="{{ emp['ssn'] }}" readonly></td>
+    </tr>
+    <tr>
+      <td>First Name:</td>
+      <td><input type="text" name="first_name" value="{{ emp['first_name'] }}" required></td>
+    </tr>
+    <tr>
+      <td>Middle Initial:</td>
+      <td><input type="text" name="middle_initial" value="{{ emp['middle_initial'] }}" maxlength="1"></td>
+    </tr>
+    <tr>
+      <td>Last Name:</td>
+      <td><input type="text" name="last_name" value="{{ emp['last_name'] }}" required></td>
+    </tr>
+    <tr>
+      <td>Sex:</td>
+      <td>
+        <select name="sex" required>
+          <option value="M" {% if emp['sex'] == 'M' %}selected{% endif %}>Male</option>
+          <option value="F" {% if emp['sex'] == 'F' %}selected{% endif %}>Female</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Address:</td>
+      <td><input type="text" name="address" value="{{ emp['address'] }}" required></td>
+    </tr>
+    <tr>
+      <td>Salary:</td>
+      <td><input type="number" name="salary" value="{{ emp['salary'] }}" min="0" required></td>
+    </tr>
+    <tr>
+      <td>Department (Dno):</td>
+      <td><input type="number" name="dno" value="{{ emp['dno'] }}" min="1" required></td>
+    </tr>
+    <tr>
+      <td>Birth Date:</td>
+      <td><input type="date" name="bday" value="{{ emp['bday'] }}"></td>
+    </tr>
+  </table>
+  <br>
+  <button type="submit">Update Employee</button>
+  <a href="{{ url_for('employees') }}">Cancel</a>
+</form>
+{% endblock %}
