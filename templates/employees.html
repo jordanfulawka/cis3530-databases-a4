@@ -27,9 +27,10 @@ content %}
 
   <button type="submit">Filter</button>
   <button type="submit" style="display: inline;">Clear Filters</button>
+  <button type="button" onclick="exportTableToCSV('employees_export.csv')"> Export Table to CSV </button>
 </form>
 
-<table border="1">
+<table border="1" id="employeesTable">
   <thead>
     <tr>
       <th>Employee Name</th>
@@ -37,6 +38,7 @@ content %}
       <th># of Dependents</th>
       <th># of Projects</th>
       <th>Total Hours</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -66,4 +68,34 @@ content %}
     {% endfor %}
   </tbody>
 </table>
-{% endblock %}c
+
+<script>
+  function downloadCSV(csv, filename) {
+    const csvFile = new Blob([csv], { type: 'text/csv' });
+    const downloadLink = document.createElement('a');
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
+  function exportTableToCSV(filename) {
+    const rows = document.querySelectorAll('#employeesTable tr');
+    let csv = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = [], cols = rows[i].querySelectorAll('td, th');
+      for (let j = 0; j < cols.length-1; j++) {
+        row.push(cols[j].innerText);
+      }
+      csv.push(row.join(','));
+    }
+
+    downloadCSV(csv.join('\n'), filename);
+  }
+</script>
+
+
+{% endblock %}

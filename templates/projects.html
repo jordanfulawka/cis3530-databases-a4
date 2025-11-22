@@ -2,7 +2,9 @@
 content %}
 <h1>Projects</h1>
 
-<table border="1">
+<button type="button" onclick="exportTableToCSV('projects_export.csv')"> Export Table to CSV </button>
+
+<table border="1" id="projectsTable">
   <thead>
     <tr>
       <th>Project Name</th>
@@ -28,4 +30,33 @@ content %}
     {% endfor %}
   </tbody>
 </table>
+
+<script>
+  function downloadCSV(csv, filename) {
+    const csvFile = new Blob([csv], { type: 'text/csv' });
+    const downloadLink = document.createElement('a');
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
+  function exportTableToCSV(filename) {
+    const rows = document.querySelectorAll('#projectsTable tr');
+    let csv = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = [], cols = rows[i].querySelectorAll('td, th');
+      for (let j = 0; j < cols.length; j++) {
+        row.push(cols[j].innerText);
+      }
+      csv.push(row.join(','));
+    }
+
+    downloadCSV(csv.join('\n'), filename);
+  }
+</script>
+
 {% endblock %}
