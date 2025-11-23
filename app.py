@@ -158,20 +158,38 @@ def employees():
 def projects():
     with get_db() as conn:
         with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
-            cur.execute("""
-                SELECT p.Pname as project_name,
-                        d.Dname as department_name,
-                        COUNT(DISTINCT W.Essn) as headcount,
-                        COALESCE(SUM(W.Hours), 0) as total_hours,
-                        p.Pnumber as project_number
-                FROM Project p
-                JOIN Department d ON p.Dnum = d.Dnumber
-                LEFT JOIN Works_On w ON p.Pnumber = w.Pno
-                GROUP BY p.Pnumber, p.Pname, d.Dname
-            """)
+
+            sort_by = request.args.get("sort_by", "project_name")
+            sort_dir = request.args.get("sort_dir", "asc").lower()
+
+            sort_columns = {
+            "project_name": "p.Pname",
+            "department_name": "d.Dname", 
+            "headcount": "headcount",
+            "total_hours": "total_hours"
+        }
+            sort_directions = {"asc", "desc"}
+
+            sort_column_sql = sort_columns.get(sort_by, "p.Pname")
+            sort_direction_sql = sort_dir if sort_dir in sort_directions else "asc"
+
+            query = """
+            SELECT p.Pname as project_name,
+                    d.Dname as department_name,
+                    COUNT(DISTINCT W.Essn) as headcount,
+                    COALESCE(SUM(W.Hours), 0) as total_hours,
+                    p.Pnumber as project_number
+            FROM Project p
+            JOIN Department d ON p.Dnum = d.Dnumber
+            LEFT JOIN Works_On w ON p.Pnumber = w.Pno
+            GROUP BY p.Pnumber, p.Pname, d.Dname
+            ORDER BY {} {}
+        """.format(sort_column_sql, sort_direction_sql)
+            
+            cur.execute(query)
             projects_list = cur.fetchall()
 
-    return render_template("projects.html", projects=projects_list)
+    return render_template("projects.html", projects=projects_list, sort_by=sort_by, sort_dir=sort_dir)
 
 @app.route("/project/<int:project_id>", methods=["GET", "POST"])
 @login_required

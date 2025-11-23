@@ -2,6 +2,21 @@
 content %}
 <h1>Projects</h1>
 
+<form method="GET" action="{{ url_for('projects') }}">
+  <label for="sort_by">Sort by:</label>
+  <select name="sort_by" id="sort_by">
+    <option value="headcount" {% if sort_by == 'headcount' %}selected{% endif %}>Headcount</option>
+    <option value="total_hours" {% if sort_by == 'total_hours' %}selected{% endif %}>Total Hours</option>
+  </select>
+
+  <select name="sort_dir" id="sort_dir">
+    <option value="asc" {% if sort_dir == 'asc' %}selected{% endif %}>Ascending</option>
+    <option value="desc" {% if sort_dir == 'desc' %}selected{% endif %}>Descending</option>
+  </select>
+
+  <button type="submit">Apply Sort</button>
+</form>
+
 <button type="button" onclick="exportTableToCSV('projects_export.csv')"> Export Table to CSV </button>
 
 <table border="1" id="projectsTable">
