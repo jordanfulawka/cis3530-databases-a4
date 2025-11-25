@@ -4,7 +4,7 @@
 {% block content %}
 <h1>Edit Employee</h1>
 
-<form method="POST" action="{{ url_for('edit_employee_submit', ssn=emp['ssn']) }}">
+<form method="POST" action="{{ url_for('edit_employee_submit', ssn=emp['ssn']) }}" class="edit-employee">
   <table>
     <tr>
       <td>SSN:</td>
@@ -52,4 +52,21 @@
   <button type="submit">Update Employee</button>
   <a href="{{ url_for('employees') }}">Cancel</a>
 </form>
+
+<style>
+  .add-employee button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #002fffff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .filter-form button:hover {
+    background-color: #003a79ff;
+  }
+</style>
+
 {% endblock %}

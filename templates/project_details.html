@@ -17,7 +17,7 @@
 </table>
 
 <h2>Add Hours / Assign Employee</h2>
-<form method="POST">
+<form method="POST" class="edit-project">
   <label>Employee:</label>
   <select name="employee">
     {% for e in all_employees %}
@@ -30,5 +30,21 @@
 
   <button type="submit">Submit</button>
 </form>
+
+<style>
+  .edit-project button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #002fffff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .edit-project button:hover {
+    background-color: #003a79ff;
+  }
+</style>
 
 {% endblock %}
