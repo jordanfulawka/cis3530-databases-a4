@@ -4,3 +4,11 @@ username TEXT UNIQUE NOT NULL,
 password_hash TEXT NOT NULL,
 role TEXT NOT NULL CHECK (role IN ('admin','viewer'))
 );
+
+CREATE INDEX idx_employee_name ON Employee (Lname, Fname);
+
+CREATE INDEX idx_workson_pno ON Works_On(Pno);
+
+CREATE INDEX idx_employee_dno ON Employee(Dno);
+
+CREATE INDEX idx_dependent_essn ON Dependent(Essn);

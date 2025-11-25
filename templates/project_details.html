@@ -12,6 +12,17 @@
   <tr>
     <td>{{ e[1] }} {{ e[2] }} {{ e[3] }}</td>
     <td>{{ e[4] }}</td>
+    <td>
+      <form
+        method="POST"
+        action="{{ url_for('remove_employee', project_id=project[1], employee_ssn=e[0]) }}"
+        style="display: inline"
+      >
+        <button type="submit" onclick="return confirm('Remove this employee?')">
+          X
+        </button>
+      </form>
+    </td>
   </tr>
   {% endfor %}
 </table>
