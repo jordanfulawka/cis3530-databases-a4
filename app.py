@@ -273,7 +273,7 @@ def add_employee_submit():
     address = request.form["address"]
     salary = request.form["salary"]
     dno = request.form["dno"]
-    bday = request.form["bday"]
+    bday = request.form["bday"] or None
 
     try:
         cur = conn.cursor()
