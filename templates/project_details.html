@@ -3,7 +3,7 @@
 <h1>Project: {{ project[0] }} ({{ project[1] }})</h1>
 
 <h2>Assigned Employees</h2>
-<table>
+<table border="1">
   <tr>
     <th>Name</th>
     <th>Hours</th>
@@ -12,6 +12,7 @@
   <tr>
     <td>{{ e[1] }} {{ e[2] }} {{ e[3] }}</td>
     <td>{{ e[4] }}</td>
+    {% if g.user.role == 'admin' %}
     <td>
       <form
         method="POST"
@@ -23,10 +24,12 @@
         </button>
       </form>
     </td>
+    {% endif %}
   </tr>
   {% endfor %}
 </table>
 
+{% if g.user.role == 'admin' %}
 <h2>Add Hours / Assign Employee</h2>
 <form method="POST" class="edit-project">
   <label>Employee:</label>
@@ -41,21 +44,4 @@
 
   <button type="submit">Submit</button>
 </form>
-
-<style>
-  .edit-project button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #002fffff;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .edit-project button:hover {
-    background-color: #003a79ff;
-  }
-</style>
-
-{% endblock %}
+{% endif %} {% endblock %}
