@@ -372,6 +372,11 @@ def managers():
             managers_list = cur.fetchall()
     return render_template("managers.html", managers=managers_list)
 
+@app.route("/import_employees", methods=["POST"])
+@admin_required
+def import_employees():
+    pass
+
 @app.route("/logout")
 def logout():
     session.clear()
