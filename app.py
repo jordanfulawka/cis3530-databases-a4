@@ -1,8 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, g
+from flask import Flask, render_template, redirect, url_for, request, flash, session, g, send_from_directory
 from db import get_db, close_db
 from functools import wraps
 from werkzeug.security import check_password_hash
 import psycopg
+import pandas as pd
+import os
 
 app = Flask(__name__)
 app.secret_key = "randomkey" # change later
@@ -375,8 +377,48 @@ def managers():
 @app.route("/import_employees", methods=["POST"])
 @admin_required
 def import_employees():
-    pass
+    uploaded = request.files.get("file")
+    if not uploaded:
+        flash("No file selected")
+        return redirect(url_for(employees))
+    
+    try:
+        df = pd.read_excel(uploaded)
+        required_cols = ["SSN","First Name","Middle Initial","Last Name","Birth Date","Address","Sex","Salary","Department Number"]
+        for col in required_cols:
+            if col not in df.columns:
+                flash(f"Missing column in spreadsheet: {col}")
+                return redirect(url_for("employees"))
+        db = get_db()
+        cur = db.cursor()
 
+        for _, row, in df.iterrows():
+            cur.execute("""
+                INSERT INTO Employee (Ssn, Fname, Minit, Lname, Bdate, Address, Sex, Salary, Dno)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (Ssn) DO NOTHING;
+            """, (
+                row["SSN"], row["First Name"], row["Middle Initial"], row["Last Name"],
+                row["Birth Date"], row["Address"], row["Sex"], row["Salary"], row["Department Number"]
+            )) 
+
+        db.commit()
+        flash("Employees imported successfully")
+
+    except Exception as e:
+        print(e)
+        flash("Error processing file")
+
+    return redirect(url_for("employees"))
+
+@app.route("/download_template")
+@admin_required
+def download_template():
+    return send_from_directory(
+        directory=os.path.join(app.root_path, "static", "templates"),path="excel_employee_template.xlsx",as_attachment=True
+    )
+
+        
 @app.route("/logout")
 def logout():
     session.clear()
