@@ -11,4 +11,8 @@ $env:DATABASE_URL="postgresql://username:password@localhost/my_company_db"
 psql postgresql://user:password@localhost/my_company_db -f company_v3.02.sql
 psql postgresql://user:password@localhost/my_company_db -f team_setup.sql
 
+Creating admin and viewer:
+python create_user.py admin
+python create_user.py viewer
+
 flask run
