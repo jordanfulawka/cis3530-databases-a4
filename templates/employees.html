@@ -32,11 +32,13 @@ content %}
 <form class="filter-form">
   <button type="submit">Clear Filters</button>
 </form>
+{% if g.user.role == 'admin' %}
 <form action="{{ url_for('import_employees') }}" method="POST" enctype="multipart/form-data">
     <input type="file" name="file" accept=".xlsx" required>
     <button type="submit" class="btn btn-primary">Import from Excel</button>
     <a href="{{ url_for('download_template') }}" class="button-link" style="background-color: blue;">Download Excel Template</a>
 </form>
+{% endif %}
 
 <table border="1" id="employeesTable">
   <thead>
