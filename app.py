@@ -350,6 +350,15 @@ def delete_employee(ssn):
             400
         )
     
+@app.route("/project/<int:project_id>/remove_employee/<employee_ssn>", methods=["POST"])
+@admin_required
+def remove_employee(project_id, employee_ssn):
+    db = get_db()
+    db.execute("DELETE FROM Works_On WHERE Essn = %s AND Pno = %s", (employee_ssn, project_id))
+    db.commit()
+    flash("Employee removed from project")
+    return redirect(url_for("project_details", project_id=project_id))
+    
 @app.route("/managers")
 def managers():
     with get_db() as conn:
@@ -362,6 +371,8 @@ def managers():
                             GROUP BY D.Dname, D.Dnumber, manager_full_name""")
             managers_list = cur.fetchall()
     return render_template("managers.html", managers=managers_list)
+
+@app.route()
 
 @app.route("/logout")
 def logout():

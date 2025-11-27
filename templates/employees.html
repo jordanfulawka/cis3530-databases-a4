@@ -32,6 +32,10 @@ content %}
 <form class="filter-form">
   <button type="submit">Clear Filters</button>
 </form>
+<form action="{{ url_for('import_employees') }}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".xlsx" required>
+    <button type="submit" class="btn btn-primary">Import from Excel</button>
+</form>
 
 <table border="1" id="employeesTable">
   <thead>
