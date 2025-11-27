@@ -372,8 +372,6 @@ def managers():
             managers_list = cur.fetchall()
     return render_template("managers.html", managers=managers_list)
 
-@app.route()
-
 @app.route("/logout")
 def logout():
     session.clear()
