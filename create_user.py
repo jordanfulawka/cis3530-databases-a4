@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 
 
 if len(sys.argv) != 2:
-    print("Usage: python script.py <role>")
+    print("Usage: python create_user.py <role>")
     sys.exit(1)
 
 
