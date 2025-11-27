@@ -16,11 +16,11 @@
     <td>
       <form
         method="POST"
-        action="{{ url_for('remove_employee', project_id=project[1], employee_ssn=e[0]) }}"
+        action="{{ url_for('delete_employee', ssn=e[0]) }}"
         style="display: inline"
       >
-        <button type="submit" onclick="return confirm('Remove this employee?')">
-          X
+        <button type="submit" onclick="return confirm('Remove this employee?')" style="background-color: red">
+          Remove Employee
         </button>
       </form>
     </td>
